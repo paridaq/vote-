@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 
 
+
 const CommentSection = ({ candidate, comments, addComment }) => {
   const [newComment, setNewComment] = useState('');
   const [userName, setUserName] = useState('');
@@ -63,8 +64,8 @@ const CommentSection = ({ candidate, comments, addComment }) => {
 
 const CandidateSection = ({ name, votes, onVote, comments, addComment }) => {
   const profileImage = 
-    name ==='Donald Trump' ? '/public/image.svg'
-    :name ==='Kamla Harris'? 'public/kamla.svg':'/placeholder.svg?height=300&width=300'
+    name ==='Donald Trump' ? 'image.jpg'
+    :name ==='Kamla Harris'? '':'/placeholder.svg?height=300&width=300'
   
   return (
   <div className="w-1/2 p-4 border-r border-purple-200">
