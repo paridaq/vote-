@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios'
+import {useLocation,useNavigate} from 'react-router-dom'
 
 
 
@@ -97,10 +99,14 @@ const ElectionPage = () => {
   const [harrisVotes, setHarrisVotes] = useState(0);
   const [trumpComments, setTrumpComments] = useState([]);
   const [harrisComments, setHarrisComments] = useState([]);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { email} = location.state;
 
-  const handleVote = (candidate) => {
+  const handleVote = async(candidate) => {
     if (candidate === 'trump') {
-      setTrumpVotes(trumpVotes + 1);
+        setTrumpVotes(trumpVotes + 1);
+        const vote = await axios.post('http://localhost:8080/api/v1/vote/trump')
     } else {
       setHarrisVotes(harrisVotes + 1);
     }
@@ -113,6 +119,8 @@ const ElectionPage = () => {
       setHarrisComments([comment, ...harrisComments]);
     }
   };
+
+  
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white via-purple-100 to-purple-300">

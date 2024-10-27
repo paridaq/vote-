@@ -1,10 +1,11 @@
-import mongoose from 'mongoose'
+import mongoose ,{Schema}from 'mongoose'
 
 const kamlaSchma = Schema({
 
     votes:{
         type:Number,
-        required:true
+        required:true,
+        default:0
     }
 })
 export default mongoose.model('kamla',kamlaSchma)

@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import morgan from 'morgan'
 import connectDB from './configuration/db.js'
 import authRoute from './routes/authRoute.js'
+import voteRoute from './routes/voteRoute.js'
 import cors from 'cors'
 
 dotenv.config()
@@ -22,6 +23,7 @@ app.use(express.urlencoded({extended:true}))
 
 //auth
 app.use('/api/v1/auth',authRoute)
+app.use('/api/v1/vote',voteRoute)
 
 const PORT = 8080;
 app.listen(PORT,()=>{

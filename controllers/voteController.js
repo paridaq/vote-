@@ -3,7 +3,8 @@ import votedUser from '../models/votedUser.js'
 import kamlaModel from '../models/kamlaModel.js'
 
 export const trumpvoteController = async(req,res)=>{
-      const { email,comment ,candidate} = req.body
+      const {email} = req.params
+      const { comment ,candidate} = req.body
     try {
         const trumpVote = await trumpModel.findOne()
         if(!trumpVote){
@@ -37,7 +38,8 @@ export const trumpvoteController = async(req,res)=>{
 
 
 export const kamlavoteController = async(req,res)=>{
-    const { email,comment ,candidate} = req.body
+    const {email} = req.params
+    const { comment ,candidate} = req.body
   try {
       const kamlaVote = await kamlaModel.findOne()
       if(!kamlaVote){
