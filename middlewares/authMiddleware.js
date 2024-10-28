@@ -1,7 +1,7 @@
 import usermodel from "../models/usermodel.js" 
  
  export const authChecker = async(req,res,next)=>{
-   const {email} =  req.body
+   const {email} =  req.params
    try {
     const user = await usermodel.findOne({email})
     if(!user){
@@ -9,10 +9,8 @@ import usermodel from "../models/usermodel.js"
            messaage:'register to vote' 
         })
     }
-    res.status(200).send({
-        success:true,
-        message:'you are eligible to vote',
-    })
+   
+    
     next()
    } catch (error) {
     console.log(error)

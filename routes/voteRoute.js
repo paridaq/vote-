@@ -4,7 +4,7 @@ import { authChecker } from '../middlewares/authMiddleware.js'
 const  router = express.Router()
 
 router.post('/trumpvotes/:email',authChecker,trumpvoteController)
-router.post('/kamlavote/:email',authChecker,kamlavoteController)
+router.post('/kamlavotes/:email',authChecker,kamlavoteController)
 
 
 export default router

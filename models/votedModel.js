@@ -12,7 +12,7 @@ const voteduserSchema =Schema({
     },
     candidate:{
         type:String,
-        required:true
+        required:false
     }
 })
 export default mongoose.model('votedUser',voteduserSchema)

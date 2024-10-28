@@ -1,147 +1,149 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import axios from 'axios'
 import {useLocation,useNavigate} from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 
-
-
-const CommentSection = ({ candidate, comments, addComment }) => {
-  const [newComment, setNewComment] = useState('');
-  const [userName, setUserName] = useState('');
-
-  const handleCommentSubmit = (e) => {
-    e.preventDefault();
-    if (newComment.trim() && userName.trim()) {
-      addComment({ user: userName, text: newComment, profilePic: '/placeholder.svg?height=40&width=40' });
-      setNewComment('');
-      setUserName('');
-    }
-  };
-
+// CommentSection Component
+const CommentSection = ({ comments = [], username, comment, setUsername, setComment, handleComment }) => {
   return (
-    <div className="bg-white bg-opacity-90 border-t border-purple-200 p-4 mt-4">
-      <h3 className="text-xl font-semibold mb-4 text-purple-800">Comments for {candidate}</h3>
-      <form onSubmit={handleCommentSubmit} className="mb-6 flex items-center">
-        <input
-          type="text"
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-          placeholder="Your Name"
-          className="flex-grow p-2 mr-2 border border-purple-300 rounded"
-          required
-        />
-        <input
-          type="text"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
-          className="flex-grow p-2 mr-2 border border-purple-300 rounded"
-          required
-        />
-        <button
-          type="submit"
-          className="bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300"
-        >
-          Post
-        </button>
-      </form>
-      <div className="space-y-4 max-h-96 overflow-y-auto">
-        {comments.map((comment, index) => (
-          <div key={index} className="flex items-start">
-            <img
-              src={comment.profilePic}
-              alt={comment.user}
-              className="w-8 h-8 rounded-full mr-3"
-            />
-            <div>
-              <span className="font-semibold mr-2 text-purple-800">{comment.user}</span>
-              <span className="text-purple-900">{comment.text}</span>
-            </div>
+    <div className="mt-4 p-4 bg-white rounded-lg shadow">
+      <input
+        type="text"
+        placeholder="Your username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        className="w-full p-2 mb-2 border rounded"
+      />
+      <textarea
+        placeholder="Add a comment"
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        className="w-full p-2 mb-2 border rounded"
+      />
+      <button
+        onClick={handleComment}
+        className="w-full p-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+      >
+        Post Comment
+      </button>
+      <div className="mt-4 max-h-40 overflow-y-auto">
+        {comments.map((c, index) => (
+          <div key={index} className="mb-2 p-2 bg-purple-100 rounded">
+            <p className="font-bold">{c.user}</p>
+            <p>{c.comment}</p>
           </div>
         ))}
       </div>
     </div>
-  );
-};
-
-const CandidateSection = ({ name, votes, onVote, comments, addComment }) => {
-  const profileImage = 
-    name ==='Donald Trump' ? 'image.jpg'
-    :name ==='Kamla Harris'? '':'/placeholder.svg?height=300&width=300'
-  
-  return (
-  <div className="w-1/2 p-4 border-r border-purple-200">
-    <div className="bg-white bg-opacity-80 rounded-lg shadow-md p-6 mb-4">
-      <img
-        src={profileImage}
-        alt={name}
-        className="w-full h-64 object-cover rounded-t-lg mb-4"
-      />
-      <h2 className="text-2xl font-bold text-center mb-4 text-purple-800">{name.toUpperCase()}</h2>
-      <button
-        onClick={onVote}
-        className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition duration-300"
-      >
-        Vote ({votes})
-      </button>
-    </div>
-    <CommentSection
-      candidate={name}
-      comments={comments}
-      addComment={addComment}
-    />
-  </div>
-);
+  )
 }
 
+// CandidateSection Component
+const CandidateSection = ({ name, imageUrl, votes, handleVote, commentProps }) => {
+  return (
+    <div className="mb-8 p-4 bg-white rounded-lg shadow">
+      <img
+        src={imageUrl}
+        alt={name}
+        className="w-32 h-32 mx-auto rounded-full object-cover"
+      />
+      <h2 className="text-2xl font-bold text-center mt-4">{name}</h2>
+      <button
+        onClick={handleVote}
+        className="w-full mt-4 p-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+      >
+        Vote for {name} ({votes})
+      </button>
+      <CommentSection {...commentProps} />
+    </div>
+  )
+}
+
+// Main ElectionPage Component
 const ElectionPage = () => {
-  const [trumpVotes, setTrumpVotes] = useState(0);
-  const [harrisVotes, setHarrisVotes] = useState(0);
-  const [trumpComments, setTrumpComments] = useState([]);
-  const [harrisComments, setHarrisComments] = useState([]);
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { email} = location.state;
+  const [trumpVotes, setTrumpVotes] = useState(0)
+  const [kamalaVotes, setKamalaVotes] = useState(0)
+  const [trumpComments, setTrumpComments] = useState([])
+  const [kamalaComments, setKamalaComments] = useState([])
+  const [username, setUsername] = useState('')
+  const [trumpComment, setTrumpComment] = useState('')
+  const [kamalaComment, setKamalaComment] = useState('')
+  const location = useLocation()
+  const navigate = useNavigate()
+  const {email} = location.state
 
   const handleVote = async(candidate) => {
     if (candidate === 'trump') {
-        setTrumpVotes(trumpVotes + 1);
-        const vote = await axios.post('http://localhost:8080/api/v1/vote/trump')
-    } else {
-      setHarrisVotes(harrisVotes + 1);
-    }
-  };
+     
+      const trumpVote = await axios.post(`http://localhost:8080/api/v1/vote/trumpvotes/${email}`)
+      if(trumpVote.data.success){
+        setTrumpVotes(trumpVotes + 1)
+        toast.success(trumpVote.data.success)
+       
+      }
 
-  const addComment = (candidate) => (comment) => {
-    if (candidate === 'trump') {
-      setTrumpComments([comment, ...trumpComments]);
-    } else {
-      setHarrisComments([comment, ...harrisComments]);
-    }
-  };
 
-  
+    } else {
+    
+      const kamlaVote = await axios.post(`http://localhost:8080/api/v1/vote/kamlavotes/${email}`)
+      if(kamlaVote.data.success){
+        setKamalaVotes(kamalaVotes + 1)
+        toast.success(kamlaVote.data.success)
+        
+      }
+    }
+  }
+
+  const handleComment = (candidate) => {
+    if (!username) {
+      alert('Please enter a username before commenting.')
+      return
+    }
+    if (candidate === 'trump' && trumpComment.trim()) {
+      setTrumpComments([...trumpComments, { user: username, comment: trumpComment }])
+      setTrumpComment('')
+    } else if (candidate === 'kamala' && kamalaComment.trim()) {
+      setKamalaComments([...kamalaComments, { user: username, comment: kamalaComment }])
+      setKamalaComment('')
+    }
+  }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-white via-purple-100 to-purple-300">
-      <div className="flex-1 flex">
+    <div className="min-h-screen bg-gradient-to-b from-purple-100 to-purple-400 p-4">
+      <h1 className="text-4xl font-bold text-center mb-8 text-purple-800">Election Page</h1>
+      <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
         <CandidateSection
           name="Donald Trump"
+          imageUrl="https://via.placeholder.com/150?text=Donald+Trump"
           votes={trumpVotes}
-          onVote={() => handleVote('trump')}
-          comments={trumpComments}
-          addComment={addComment('trump')}
+          handleVote={() => handleVote('trump')}
+          commentProps={{
+            comments: trumpComments,
+            username,
+            comment: trumpComment,
+            setUsername,
+            setComment: setTrumpComment,
+            handleComment: () => handleComment('trump')
+          }}
         />
         <CandidateSection
           name="Kamala Harris"
-          votes={harrisVotes}
-          onVote={() => handleVote('harris')}
-          comments={harrisComments}
-          addComment={addComment('harris')}
+          imageUrl="https://via.placeholder.com/150?text=Kamala+Harris"
+          votes={kamalaVotes}
+          handleVote={() => handleVote('kamala')}
+          commentProps={{
+            comments: kamalaComments,
+            username,
+            comment: kamalaComment,
+            setUsername,
+            setComment: setKamalaComment,
+            handleComment: () => handleComment('kamala')
+          }}
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ElectionPage;
+export default ElectionPage
