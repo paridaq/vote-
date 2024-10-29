@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import {useLocation,useNavigate} from 'react-router-dom'
 import toast from 'react-hot-toast'
@@ -6,15 +6,17 @@ import toast from 'react-hot-toast'
 
 // CommentSection Component
 const CommentSection = ({ comments = [], username, comment, setUsername, setComment, handleComment }) => {
+  const location = useLocation()
+  const {email} = location.state
   return (
     <div className="mt-4 p-4 bg-white rounded-lg shadow">
-      <input
-        type="text"
-        placeholder="Your username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="w-full p-2 mb-2 border rounded"
-      />
+        <input
+type="text"
+placeholder="Your username"
+value={username}
+onChange={(e) => setUsername(e.target.value)}
+className="w-full p-2 mb-2 border rounded"
+/>
       <textarea
         placeholder="Add a comment"
         value={comment}
@@ -94,14 +96,23 @@ const ElectionPage = () => {
       }
     }
   }
+  useEffect(()=>{
+    const storedName = localStorage.getItem('username') 
+    setUsername(storedName)
+  },[])
 
-  const handleComment = (candidate) => {
+  const handleComment = async(candidate) => {
     if (!username) {
       alert('Please enter a username before commenting.')
       return
     }
     if (candidate === 'trump' && trumpComment.trim()) {
+      const res = await axios.post(`http://localhost:8080/api/vote/comment/${email}`,{comment:trumpComment,candidate,})
+      if(res.data.success){
+        alert(res.data.message)
+      }
       setTrumpComments([...trumpComments, { user: username, comment: trumpComment }])
+      
       setTrumpComment('')
     } else if (candidate === 'kamala' && kamalaComment.trim()) {
       setKamalaComments([...kamalaComments, { user: username, comment: kamalaComment }])

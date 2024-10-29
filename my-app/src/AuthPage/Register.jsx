@@ -19,7 +19,7 @@ try {
   const res = await axios.post ('http://localhost:8080/api/v1/auth/register',{name,email,password})
   if(res && res.data.success){
     toast.success(res.data.messsage)
-    navigate(location.state ?.from || '/vote ',{state:{email}})
+    navigate(location.state ?.from || '/vote ',{state:{email,name}})
   }
 } catch (error) {
   console.log(error)

@@ -77,3 +77,33 @@ export const kamlavoteController = async(req,res)=>{
       
   }
 }
+
+export const commentController = async(req,res)=>{
+    const {email,} = req.params
+    const {comment ,candidate} = req.body 
+    try {
+        if(!comment){
+            return res.send({
+                message:'comment required to adding comment'
+            })
+        }
+       
+        const userComment  = await votedModel.create({comment,candidate})
+        res.status(200).send({
+            success:true,
+            message:'Your comment recorded',
+            userComment:{
+                comment:userComment.comment,
+                candidate:userComment.candidate
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            successfalse,
+            message:'server error can not proceed to post',
+            error
+        })
+        
+    }
+}

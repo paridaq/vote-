@@ -1,5 +1,9 @@
 import mongoose, { Schema } from "mongoose";
 const voteduserSchema =Schema({
+    name:{
+        type:String,
+        required:false
+    },
     email:{
         type:String,
         required:true

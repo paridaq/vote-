@@ -18,7 +18,9 @@ export default function Login() {
       const res = await axios.post('http://localhost:8080/api/v1/auth/login',{email,password})
       if(res&&res.data.success){
         toast.success(res.data.messsage)
-        navigate(location.state ?.from ||'/vote' ,{state:{email}})
+        const name = localStorage.getItem('name')
+        
+        navigate(location.state ?.from ||'/vote' ,{state:{email,name}})
       }
     } catch (error) {
       console.log(error)
